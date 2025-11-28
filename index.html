@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STRUCTURA | متجر المنتجات الرقمية الاحترافية</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    
+    <style>
+        /* =================================
+           1. المتغيرات والأساسيات
+           ================================= */
+        :root {
+            --primary: #2563eb;
+            --secondary: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --border: #e2e8f0;
+            --radius: 12px;
+            --font: 'Cairo', sans-serif;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f1f5f9;
+            --secondary: #94a3b8;
+            --border: #334155;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+        body { font-family: var(--font); background: var(--bg-body); color: var(--text-main); padding-top: 80px; transition: 0.3s; min-height: 100vh; display: flex; flex-direction: column; }
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* =================================
+        
+           2. المكونات (Components)
+           ================================= */
+        /* Header */
+        .header { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); position: fixed; top: 0; width: 100%; height: 80px; display: flex; align-items: center; border-bottom: 1px solid var(--border); z-index: 1000; }
+        body.dark-mode .header { background: rgba(15, 23, 42, 0.9); }
+        .header-content { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .logo { font-size: 1.8rem; font-weight: 900; letter-spacing: 1px; cursor: pointer; }
+        .logo span { color: var(--primary); }
+
+        /* Buttons */
+        .btn { padding: 12px 24px; border-radius: var(--radius); border: none; cursor: pointer; font-weight: 700; font-family: var(--font); transition: 0.3s; display: inline-flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37, 99, 235, 0.5); }
+        .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+        .btn-secondary:hover { background: var(--border); }
+
+        /* Sections & Grid */
+        .page-section { display: none; animation: fadeIn 0.5s ease; }
+        .page-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; margin: 40px 0; }
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: 0.3s; display: flex; flex-direction: column; position: relative; box-shadow: var(--shadow); }
+        .card:hover { transform: translateY(-8px); border-color: var(--primary); }
+        .card img { width: 100%; height: 220px; object-fit: cover; cursor: pointer; }
+        .card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+        
+        /* Features Bar */
+        .features-bar { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-bottom: 50px; padding: 20px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .feature-item { display: flex; align-items: center; gap: 10px; color: var(--secondary); font-weight: 600; }
+        .feature-item i { color: var(--primary); }
+
+        /* Checkout Form */
+        .checkout-box { background: var(--bg-card); padding: 30px; border-radius: var(--radius); border: 1px solid var(--border); max-width: 600px; margin: 0 auto; box-shadow: var(--shadow); }
+        input, select { width: 100%; padding: 14px; margin-bottom: 15px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--bg-body); color: var(--text-main); font-family: var(--font); }
+        .zain-box { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); padding: 15px; border-radius: var(--radius); margin-bottom: 20px; display: none; }
+        
+        /* Floating WhatsApp */
+        .whatsapp-float { position: fixed; bottom: 30px; right: 30px; background: #25D366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); z-index: 1500; transition: 0.3s; }
+        .whatsapp-float:hover { transform: scale(1.1); }
+
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-content { background: var(--bg-card); width: 90%; max-width: 800px; border-radius: 20px; display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; animation: pop 0.3s ease; }
+        @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        /* Footer */
+        .main-footer { background: var(--bg-card); border-top: 1px solid var(--border); padding: 50px 0 20px; margin-top: auto; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 40px; }
+        
+        /* Utilities */
+        .toast { position: fixed; bottom: 30px; left: 30px; background: var(--bg-card); border: 1px solid var(--border); padding: 15px 25px; border-radius: 50px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); transform: translateX(-100px); opacity: 0; transition: 0.4s; z-index: 3000; display: flex; align-items: center; gap: 10px; }
+        .toast.show { transform: translateX(0); opacity: 1; }
+
+        @media (max-width: 768px) { .modal-content { grid-template-columns: 1fr; max-height: 90vh; overflow-y: auto; } }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="container header-content">
+            <div class="logo" onclick="app.nav('home')">STRUCTURA<span>.</span></div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <div style="cursor: pointer;" onclick="app.toggleTheme()"><i class="fas fa-moon" id="theme-icon"></i></div>
+                <div style="position: relative; cursor: pointer;" onclick="app.nav('cart')">
+                    <i class="fas fa-shopping-bag" style="font-size: 1.4rem;"></i>
+                    <span id="cart-badge" style="position: absolute; top: -5px; right: -8px; background: var(--danger); color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%;">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container" style="padding-bottom: 40px;">
+        
+        <section id="view-home" class="page-section active">
+            <div style="text-align: center; padding: 60px 20px;">
+                <h1 style="font-size: 3rem; margin-bottom: 15px; font-weight: 900;">حلول رقمية تبني <span style="color:var(--primary)">مستقبلك</span></h1>
+                <p style="color:var(--secondary); max-width: 600px; margin: 0 auto 30px; font-size: 1.1rem;">متجر STRUCTURA يقدم لك أفضل قوالب Notion، الكتب التعليمية، والأدوات البرمجية لاختصار وقتك.</p>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button class="btn btn-primary" onclick="document.getElementById('products').scrollIntoView()">تصفح المنتجات</button>
+                    <button class="btn btn-secondary" onclick="document.getElementById('faq').scrollIntoView()">الأسئلة الشائعة</button>
+                </div>
+            </div>
+<div class="features-bar">
+                <div class="feature-item"><i class="fas fa-bolt"></i> تسليم فوري</div>
+                <div class="feature-item"><i class="fas fa-shield-alt"></i> دفع آمن</div>
+                <div class="feature-item"><i class="fas fa-headset"></i> دعم فني</div>
+            </div>
+            
+            <div id="products" class="grid">
+                </div>
+
+            <div style="margin-bottom: 60px;">
+                <h2 style="text-align: center; margin-bottom: 30px;">ماذا يقول عملاؤنا؟</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                    <div class="checkout-box" style="text-align: center;">
+                        <div style="color: #f59e0b; margin-bottom: 10px;">⭐⭐⭐⭐⭐</div>
+                        <p style="color: var(--secondary); margin-bottom: 10px;">"القوالب وفرت علي ساعات من العمل. تصميم نظيف واحترافي جداً."</p>
+                        <strong>- أحمد محمد</strong>
+                    </div>
+                    <div class="checkout-box" style="text-align: center;">
+                        <div style="color: #f59e0b; margin-bottom: 10px;">⭐⭐⭐⭐⭐</div>
+                        <p style="color: var(--secondary); margin-bottom: 10px;">"تجربة شراء ممتازة، الملف وصلني فوراً بعد تحويل زين كاش."</p>
+                        <strong>- سارة علي</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div id="faq" style="max-width: 800px; margin: 0 auto;">
+                <h2 style="text-align: center; margin-bottom: 30px;">الأسئلة الشائعة</h2>
+                <div class="checkout-box" style="margin-bottom: 15px;">
+                    <strong>كيف أستلم المنتج؟</strong>
+                    <p style="color: var(--secondary); margin-top: 5px;">يصلك رابط التحميل فوراً عبر البريد الإلكتروني بعد إتمام الدفع.</p>
+                </div>
+                <div class="checkout-box">
+                    <strong>هل يمكنني الدفع عبر زين كاش؟</strong>
+                    <p style="color: var(--secondary); margin-top: 5px;">نعم، ندعم الدفع عبر زين كاش والبطاقات الائتمانية.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-cart" class="page-section">
+            <h2 style="margin-bottom: 20px;">سلة المشتريات</h2>
+            <div id="cart-items"></div>
+            <div id="empty-cart" style="text-align: center; padding: 50px; display: none;">
+                <i class="fas fa-shopping-basket" style="font-size: 4rem; color: var(--border); margin-bottom: 20px;"></i>
+                <h3>السلة فارغة</h3>
+                <button class="btn btn-primary" onclick="app.nav('home')" style="margin-top: 20px;">تصفح المتجر</button>
+            </div>
+        </section>
+
+        <section id="view-checkout" class="page-section">
+            <div class="checkout-box">
+                <h2 style="text-align: center; margin-bottom: 20px;">إتمام الطلب الآمن 🔒</h2>
+                <form onsubmit="app.checkout(event)">
+                    <label>الاسم الكامل</label>
+                    <input type="text" id="c-name" required placeholder="الاسم الكريم">
+                    
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="c-email" required placeholder="لاستلام الملفات">
+                    
+                    <label>وسيلة الدفع</label>
+                    <select id="payment-method" onchange="app.togglePayment()">
+                        <option value="card">بطاقة ائتمان (Visa/Mastercard)</option>
+                        <option value="zaincash">زين كاش (Zain Cash) 🇮🇶</option>
+                    </select>
+
+                    <div id="zain-box" class="zain-box">
+                        <p>يرجى تحويل المبلغ الإجمالي إلى محفظة زين كاش:</p>
+                        <h3 style="direction: ltr; text-align: right; color: var(--success); margin: 10px 0;">07735288035</h3>
+                        <p style="font-size: 0.9rem; margin-bottom: 10px;">ثم أدخل رقم عملية التحويل في الأسفل:</p>
+                        <input type="text" id="trx-id" placeholder="Transaction ID (مثال: 100234...)">
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin: 20px 0; font-weight: bold; font-size: 1.2rem;">
+                        <span>الإجمالي</span>
+                        <span id="total-price" style="color: var(--primary);">$0.00</span>
+                    </div>
+
+                    <div class="cf-turnstile" data-sitekey="0x4AAAAAACDbnsAA6hQo0eDh"></div>
+                    <br>
+
+                    <button type="submit" class="btn btn-primary" id="pay-btn" style="width: 100%;">تأكيد ودفع</button>
+                    <button type="button" class="btn btn-secondary" onclick="app.nav('cart')" style="width: 100%; margin-top: 10px;">رجوع</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="view-success" class="page-section" style="text-align: center; padding: 60px 0;">
+            <i class="fas fa-check-circle" style="font-size: 6rem; color: var(--success); margin-bottom: 20px;"></i>
+            <h1>تم استلام طلبك بنجاح!</h1>
+            <p style="color: var(--secondary);">راجع بريدك الإلكتروني الآن، روابط التحميل بانتظارك.</p>
+            <button class="btn btn-primary" onclick="app.nav('home')" style="margin-top: 30px;">العودة للرئيسية</button>
+        </section>
+
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="logo" style="margin-bottom: 15px;">STRUCTURA<span>.</span></div>
+                    <p style="color: var(--secondary);">متجرك الأول للأدوات الرقمية.</p>
+                </div>
+                <div>
+                    <h3>تواصل معنا</h3>
+                    <p style="color: var(--secondary);"><i class="fas fa-phone"></i> 07735288035</p>
+                    <p style="color: var(--secondary);">SAJAD JAMAA MAZHER</p>
+                </div>
+            </div>
+            <div style="text-align: center; border-top: 1px solid var(--border); padding-top: 20px; margin-top: 20px; font-size: 0.8rem;">
+                &copy; 2024 STRUCTURA. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/9647735288035" target="_blank" class="whatsapp-float">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <div class="modal-overlay" id="product-modal" onclick="if(event.target===this) app.closeModal()">
+        <div class="modal-content">
+            <img id="m-img" src="" style="width:100%; height:100%; object-fit:cover;">
+            <div style="padding: 30px; display: flex; flex-direction: column;">
+                <h2 id="m-title" style="margin-bottom: 10px;">Product</h2>
+                <div style="color: #f59e0b; margin-bottom: 15px;">⭐⭐⭐⭐⭐ (Top Seller)</div>
+                <p id="m-desc" style="color: var(--secondary); flex: 1;"></p>
+                <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <span id="m-price" style="font-weight: 900; font-size: 1.5rem; color: var(--primary);"></span>
+                    <button id="m-btn" class="btn btn-primary">أضف للسلة</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const products = [
+            { id: 1, title: "قالب Notion لإدارة الحياة", price: 19.99, img: "https://images.unsplash.com/photo-1664575602276-acd073f104c1?w=600", desc: "نظم حياتك بالكامل مع هذا القالب الشامل." },
+            { id: 2, title: "كتاب: أسرار البرمجة", price: 14.50, img: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=600", desc: "دليل المبتدئين للدخول في عالم الكود." },
+            { id: 3, title: "حزمة أيقونات 3D", price: 29.00, img: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=600", desc: "أضف جمالية لتطبيقك مع 500 أيقونة." },
+            { id: 4, title: "قالب متجر إلكتروني", price: 49.99, img: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=600", desc: "كود HTML جاهز لبناء متجرك القادم." }
+        ];
+
+        const app = {
+            cart: JSON.parse(localStorage.getItem('cart')) || [],
+            
+            init: function() {
+                if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+                this.render();
+                this.updateUI();
+            },
+
+            render: function() {
+                const grid = document.getElementById('products');
+                grid.innerHTML = products.map(p => `
+                    <div class="card">
+                        <img src="${p.img}" onclick="app.openModal(${p.id})">
+                        <div class="card-body">
+                            <h3>${p.title}</h3>
+                            <div style="margin-top:auto; display:flex; justify-content:space-between; align-items:center;">
+                                <span style="font-weight:bold; font-size:1.2rem;">$${p.price}</span>
+                                <div style="display:flex; gap:10px;">
+                                    <button class="btn btn-secondary" onclick="app.openModal(${p.id})"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-primary" onclick="app.add(${p.id})">أضف</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            openModal: function(id) {
+                const p = products.find(i => i.id === id);
+                document.getElementById('m-img').src = p.img;
+                document.getElementById('m-title').innerText = p.title;
+                document.getElementById('m-desc').innerText = p.desc;
+                document.getElementById('m-price').innerText = `$${p.price}`;
+                document.getElementById('m-btn').onclick = () => { app.add(id); app.closeModal(); };
+                document.getElementById('product-modal').style.display = 'flex';
+            },
+
+            closeModal: function() { document.getElementById('product-modal').style.display = 'none'; },
+
+            add: function(id) {
+                if (!this.cart.find(i => i.id === id)) {
+                    this.cart.push(products.find(p => p.id === id));
+                    this.save(); this.toast('تمت الإضافة للسلة');
+                } else { this.toast('موجود في السلة', 'info'); }
+            },
+
+            remove: function(id) {
+                this.cart = this.cart.filter(i => i.id !== id);
+                this.save(); this.renderCart();
+            },
+
+            save: function() { localStorage.setItem('cart', JSON.stringify(this.cart)); this.updateUI(); },
+            updateUI: function() { document.getElementById('cart-badge').innerText = this.cart.length; },
+
+            nav: function(view) {
+                document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+                document.getElementById(`view-${view}`).classList.add('active');
+                window.scrollTo(0,0);
+                if (view === 'cart') this.renderCart();
+            },
+
+            renderCart: function() {
+                const con = document.getElementById('cart-items');
+                if (this.cart.length === 0) {
+                    con.innerHTML = '';
+                    document.getElementById('empty-cart').style.display = 'block';
+                    return;
+                }
+                document.getElementById('empty-cart').style.display = 'none';
+                let total = 0;
+                con.innerHTML = this.cart.map(i => {
+                    total += i.price;
+                    return `<div style="display:flex; justify-content:space-between; padding:15px; border-bottom:1px solid var(--border); align-items:center;">
+                        <span>${i.title}</span>
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            <span style="color:var(--primary); font-weight:bold;">$${i.price}</span>
+                            <i class="fas fa-trash" style="color:var(--danger); cursor:pointer;" onclick="app.remove(${i.id})"></i>
+                        </div>
+                    </div>`;
+                }).join('') + `<div style="margin-top:20px;"><button class="btn btn-primary" onclick="app.toCheckout(${total})" style="width:100%">المتابعة للدفع ($${total.toFixed(2)})</button></div>`;
+            },
+
+            toCheckout: function(t) {
+                document.getElementById('total-price').innerText = `$${t.toFixed(2)}`;
+                this.nav('checkout');
+            },
+
+            toggleTheme: function() {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                document.getElementById('theme-icon').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            },
+
+            togglePayment: function() {
+                const m = document.getElementById('payment-method').value;
+                document.getElementById('zain-box').style.display = m === 'zaincash' ? 'block' : 'none';
+            },
+
+            toast: function(msg) {
+                const t = document.getElementById('toast');
+                t.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`;
+                t.classList.add('show');
+                setTimeout(() => t.classList.remove('show'), 3000);
+            },
+
+            // Checkout Logic
+            checkout: function(e) {
+                e.preventDefault();
+
+                // 1. Cloudflare Check
+                const token = document.querySelector('[name="cf-turnstile-response"]').value;
+                if (!token) { this.toast('الرجاء تأكيد أنك لست روبوت'); return; }
+
+                // 2. ZainCash Check
+                const method = document.getElementById('payment-method').value;
+                const trx = document.getElementById('trx-id').value;
+                if (method === 'zaincash' && !trx) { this.toast('أدخل رقم عملية التحويل'); return; }
+
+                const btn = document.getElementById('pay-btn');
+                const txt = btn.innerText;
+                btn.innerText = 'جاري المعالجة...'; btn.disabled = true;
+
+                // 3. Prepare Data
+                const data = {
+                    name: document.getElementById('c-name').value,
+                    email: document.getElementById('c-email').value,
+                    method: method,
+                    transaction_id: trx,
+                    total: document.getElementById('total-price').innerText,
+                    items: this.cart
+                };
+
+                // 4. Send to n8n
+                // ⚠️ ضع رابط WEBHOOK الخاص بك هنا 👇
+                const WEBHOOK = 'https://digitallstructura.app.n8n.cloud/webhook/order';
+
+                fetch(WEBHOOK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                })
+                .then(res => {
+                    if (res.ok) {
+                        this.cart = []; this.save();
+                        this.nav('success');
+                        if(window.turnstile) window.turnstile.reset();
+                    } else { throw new Error('Error'); }
+                })
+                .catch(err => {
+                    console.error(err);
+                    this.toast('حدث خطأ في الاتصال');
+                })
+                .finally(() => {
+                    btn.innerText = txt; btn.disabled = false;
+                });
+            }
+        };
+
+        app.init();
+    </script>
+</body>
+</html>
