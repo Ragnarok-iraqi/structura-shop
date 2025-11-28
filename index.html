@@ -41,11 +41,10 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         body { font-family: var(--font); background: var(--bg-body); color: var(--text-main); padding-top: 80px; transition: 0.3s; min-height: 100vh; display: flex; flex-direction: column; }
-        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        a { text-decoration: none; color: inherit; transition: 0.3s; cursor: pointer; }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
 
         /* =================================
-        
            2. المكونات (Components)
            ================================= */
         /* Header */
@@ -70,7 +69,8 @@
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; margin: 40px 0; }
         .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: 0.3s; display: flex; flex-direction: column; position: relative; box-shadow: var(--shadow); }
         .card:hover { transform: translateY(-8px); border-color: var(--primary); }
-        .card img { width: 100%; height: 220px; object-fit: cover; cursor: pointer; }
+        /* توحيد مقاس الصور */
+        .card img { width: 100%; height: 250px; object-fit: cover; cursor: pointer; }
         .card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
         
         /* Features Bar */
@@ -87,20 +87,27 @@
         .whatsapp-float { position: fixed; bottom: 30px; right: 30px; background: #25D366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); z-index: 1500; transition: 0.3s; }
         .whatsapp-float:hover { transform: scale(1.1); }
 
-        /* Modal */
+        /* Modals (Product & Info) */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-content { background: var(--bg-card); width: 90%; max-width: 800px; border-radius: 20px; display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; animation: pop 0.3s ease; }
+        .modal-content { background: var(--bg-card); width: 90%; max-width: 800px; border-radius: 20px; overflow: hidden; animation: pop 0.3s ease; max-height: 90vh; display: flex; flex-direction: column; }
+        /* Product Modal Specifics */
+        .product-modal-layout { display: grid; grid-template-columns: 1fr 1fr; height: 100%; }
+        .product-modal-layout img { height: 100%; object-fit: cover; }
+        .modal-body { padding: 30px; overflow-y: auto; }
+        .modal-close { position: absolute; top: 20px; left: 20px; font-size: 1.5rem; cursor: pointer; color: var(--text-main); background: rgba(255,255,255,0.5); padding: 5px 12px; border-radius: 50%; }
         @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
-        /* Footer */
+        /* Footer Links & Info Modals */
         .main-footer { background: var(--bg-card); border-top: 1px solid var(--border); padding: 50px 0 20px; margin-top: auto; }
-        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 40px; }
-        
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-bottom: 40px; }
+        .footer-links a { display: block; margin-bottom: 10px; color: var(--secondary); }
+        .footer-links a:hover { color: var(--primary); }
+
         /* Utilities */
         .toast { position: fixed; bottom: 30px; left: 30px; background: var(--bg-card); border: 1px solid var(--border); padding: 15px 25px; border-radius: 50px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); transform: translateX(-100px); opacity: 0; transition: 0.4s; z-index: 3000; display: flex; align-items: center; gap: 10px; }
         .toast.show { transform: translateX(0); opacity: 1; }
 
-        @media (max-width: 768px) { .modal-content { grid-template-columns: 1fr; max-height: 90vh; overflow-y: auto; } }
+        @media (max-width: 768px) { .product-modal-layout { grid-template-columns: 1fr; } .product-modal-layout img { height: 250px; } }
     </style>
 </head>
 <body>
@@ -129,7 +136,8 @@
                     <button class="btn btn-secondary" onclick="document.getElementById('faq').scrollIntoView()">الأسئلة الشائعة</button>
                 </div>
             </div>
-<div class="features-bar">
+
+            <div class="features-bar">
                 <div class="feature-item"><i class="fas fa-bolt"></i> تسليم فوري</div>
                 <div class="feature-item"><i class="fas fa-shield-alt"></i> دفع آمن</div>
                 <div class="feature-item"><i class="fas fa-headset"></i> دعم فني</div>
@@ -153,8 +161,7 @@
                     </div>
                 </div>
             </div>
-
-            <div id="faq" style="max-width: 800px; margin: 0 auto;">
+<div id="faq" style="max-width: 800px; margin: 0 auto;">
                 <h2 style="text-align: center; margin-bottom: 30px;">الأسئلة الشائعة</h2>
                 <div class="checkout-box" style="margin-bottom: 15px;">
                     <strong>كيف أستلم المنتج؟</strong>
@@ -228,7 +235,14 @@
             <div class="footer-grid">
                 <div>
                     <div class="logo" style="margin-bottom: 15px;">STRUCTURA<span>.</span></div>
-                    <p style="color: var(--secondary);">متجرك الأول للأدوات الرقمية.</p>
+                    <p style="color: var(--secondary);">متجرك الأول للأدوات الرقمية الاحترافية.</p>
+                </div>
+                <div class="footer-links">
+                    <h3>روابط هامة</h3>
+                    <a onclick="app.openInfo('about')">من نحن</a>
+                    <a onclick="app.openInfo('terms')">الشروط والأحكام</a>
+                    <a onclick="app.openInfo('privacy')">سياسة الخصوصية</a>
+                    <a onclick="app.openInfo('refund')">سياسة الاسترجاع</a>
                 </div>
                 <div>
                     <h3>تواصل معنا</h3>
@@ -246,14 +260,15 @@
         <i class="fab fa-whatsapp"></i>
     </a>
 
-    <div class="modal-overlay" id="product-modal" onclick="if(event.target===this) app.closeModal()">
-        <div class="modal-content">
-            <img id="m-img" src="" style="width:100%; height:100%; object-fit:cover;">
-            <div style="padding: 30px; display: flex; flex-direction: column;">
-                <h2 id="m-title" style="margin-bottom: 10px;">Product</h2>
-                <div style="color: #f59e0b; margin-bottom: 15px;">⭐⭐⭐⭐⭐ (Top Seller)</div>
-                <p id="m-desc" style="color: var(--secondary); flex: 1;"></p>
-                <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+    <div class="modal-overlay" id="product-modal" onclick="if(event.target===this) app.closeModal('product-modal')">
+        <div class="modal-content product-modal-layout" style="position: relative;">
+            <div class="modal-close" onclick="app.closeModal('product-modal')"><i class="fas fa-times"></i></div>
+            <img id="m-img" src="">
+            <div class="modal-body">
+                <h2 id="m-title" style="margin-bottom: 10px;"></h2>
+                <div style="color: #f59e0b; margin-bottom: 15px;">⭐⭐⭐⭐⭐ (الأكثر مبيعاً)</div>
+                <p id="m-desc" style="color: var(--secondary); line-height: 1.8;"></p>
+                <div style="margin-top: 30px; display: flex; justify-content: space-between; align-items: center;">
                     <span id="m-price" style="font-weight: 900; font-size: 1.5rem; color: var(--primary);"></span>
                     <button id="m-btn" class="btn btn-primary">أضف للسلة</button>
                 </div>
@@ -261,15 +276,62 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="info-modal" onclick="if(event.target===this) app.closeModal('info-modal')">
+        <div class="modal-content" style="max-width: 600px; position: relative;">
+            <div class="modal-close" onclick="app.closeModal('info-modal')"><i class="fas fa-times"></i></div>
+            <div class="modal-body">
+                <h2 id="info-title" style="margin-bottom: 20px;"></h2>
+                <div id="info-content" style="color: var(--secondary); line-height: 1.8;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
     <div id="toast" class="toast"></div>
 
     <script>
+        // =========================================
+        // 1. بيانات المنتجات المحدثة (وصف حقيقي وصور موحدة)
+        // =========================================
         const products = [
-            { id: 1, title: "قالب Notion لإدارة الحياة", price: 19.99, img: "https://images.unsplash.com/photo-1664575602276-acd073f104c1?w=600", desc: "نظم حياتك بالكامل مع هذا القالب الشامل." },
-            { id: 2, title: "كتاب: أسرار البرمجة", price: 14.50, img: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=600", desc: "دليل المبتدئين للدخول في عالم الكود." },
-            { id: 3, title: "حزمة أيقونات 3D", price: 29.00, img: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=600", desc: "أضف جمالية لتطبيقك مع 500 أيقونة." },
-            { id: 4, title: "قالب متجر إلكتروني", price: 49.99, img: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=600", desc: "كود HTML جاهز لبناء متجرك القادم." }
+            { 
+                id: 1, 
+                title: "نظام إدارة الحياة الثاني (Notion OS)", 
+                price: 24.99, 
+                img: "https://images.unsplash.com/photo-1664575602276-acd073f104c1?w=800&h=600&fit=crop", 
+                desc: "ليس مجرد قالب، بل نظام تشغيل كامل لحياتك داخل Notion. يشمل إدارة المشاريع، المهام، الأهداف، الميزانية، وتتبع العادات. مصمم ليمنحك الصفاء الذهني والتركيز الكامل."
+            },
+            { 
+                id: 2, 
+                title: "كتاب: الطريق إلى العمل الحر (Freelancing)", 
+                price: 19.50, 
+                img: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800&h=600&fit=crop", 
+                desc: "دليلك الشامل للبدء في العمل الحر من العراق. خطوة بخطوة من بناء المعرض (Portfolio)، إلى إيجاد العملاء، وتسعير خدماتك، واستلام أرباحك. خلاصة سنوات من الخبرة."
+            },
+            { 
+                id: 3, 
+                title: "حزمة الأيقونات الاحترافية (3D Icons Pack)", 
+                price: 39.00, 
+                img: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=600&fit=crop", 
+                desc: "أكثر من 500 أيقونة ثلاثية الأبعاد عالية الدقة (PNG & Blend Files). مثالية لمصممي المواقع والتطبيقات الذين يبحثون عن لمسة عصرية وجذابة لمشاريعهم."
+            },
+            { 
+                id: 4, 
+                title: "قالب متجر إلكتروني جاهز (HTML/CSS/JS)", 
+                price: 59.99, 
+                img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop", 
+                desc: "كود نظيف، سريع، ومتجاوب بالكامل لبناء متجرك الخاص. يتضمن الصفحات الرئيسية، السلة، والدفع. جاهز للتعديل والربط مع أي نظام خلفي. (نفس الكود المستخدم في هذا المتجر!)."
+            }
         ];
+                // =========================================
+        // 2. النصوص القانونية (Info Content)
+        // =========================================
+        const infoTexts = {
+            about: { title: "عن STRUCTURA", content: "في عالم متسارع يعتمد على الإنتاجية، ولدت STRUCTURA لتكون الجسر بين طموحك وتحقيقه. نحن منصة تقدم حلولاً رقمية ذكية (قوالب، كتب، وأدوات) مصممة بعناية لاختصار ساعات من العمل اليدوي عليك. تأسس المتجر بواسطة سجاد جمعة، إيماناً بأن الأدوات الرقمية الصحيحة تغير مسار المهنة." },
+            terms: { title: "الشروط والأحكام", content: "بشراؤك لأي منتج، فإنك توافق على أن المنتجات مرخصة للاستخدام الشخصي فقط. يُمنع منعاً باتاً إعادة بيعها، أو توزيعها مجاناً، أو مشاركتها. جميع حقوق الملكية الفكرية محفوظة لـ STRUCTURA." },
+            privacy: { title: "سياسة الخصوصية", content: "خصوصيتك أمانة. البيانات التي نجمعها (الاسم، البريد الإلكتروني، رقم العملية) تستخدم حصراً لإتمام طلبك وإرسال الملفات إليك. لا نقوم ببيع أو تأجير أو مشاركة بياناتك مع أي طرف ثالث تحت أي ظرف." },
+            refund: { title: "سياسة الاسترجاع", content: "نظراً لطبيعة المنتجات الرقمية (ملفات قابلة للتحميل فورياً)، لا نقدم استرجاعاً للأموال بعد إرسال الرابط، إلا في حالات استثنائية (مثل عطب الملف). نحن هنا لضمان رضاك وحل أي مشكلة تواجهها." }
+        };
 
         const app = {
             cart: JSON.parse(localStorage.getItem('cart')) || [],
@@ -284,13 +346,13 @@
                 const grid = document.getElementById('products');
                 grid.innerHTML = products.map(p => `
                     <div class="card">
-                        <img src="${p.img}" onclick="app.openModal(${p.id})">
+                        <img src="${p.img}" onclick="app.openProduct(${p.id})">
                         <div class="card-body">
                             <h3>${p.title}</h3>
                             <div style="margin-top:auto; display:flex; justify-content:space-between; align-items:center;">
                                 <span style="font-weight:bold; font-size:1.2rem;">$${p.price}</span>
                                 <div style="display:flex; gap:10px;">
-                                    <button class="btn btn-secondary" onclick="app.openModal(${p.id})"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-secondary" onclick="app.openProduct(${p.id})"><i class="fas fa-eye"></i></button>
                                     <button class="btn btn-primary" onclick="app.add(${p.id})">أضف</button>
                                 </div>
                             </div>
@@ -299,17 +361,24 @@
                 `).join('');
             },
 
-            openModal: function(id) {
+            openProduct: function(id) {
                 const p = products.find(i => i.id === id);
                 document.getElementById('m-img').src = p.img;
                 document.getElementById('m-title').innerText = p.title;
                 document.getElementById('m-desc').innerText = p.desc;
                 document.getElementById('m-price').innerText = `$${p.price}`;
-                document.getElementById('m-btn').onclick = () => { app.add(id); app.closeModal(); };
+                document.getElementById('m-btn').onclick = () => { app.add(id); app.closeModal('product-modal'); };
                 document.getElementById('product-modal').style.display = 'flex';
             },
 
-            closeModal: function() { document.getElementById('product-modal').style.display = 'none'; },
+            openInfo: function(type) {
+                const info = infoTexts[type];
+                document.getElementById('info-title').innerText = info.title;
+                document.getElementById('info-content').innerText = info.content;
+                document.getElementById('info-modal').style.display = 'flex';
+            },
+
+            closeModal: function(id) { document.getElementById(id).style.display = 'none'; },
 
             add: function(id) {
                 if (!this.cart.find(i => i.id === id)) {
@@ -378,15 +447,11 @@
                 setTimeout(() => t.classList.remove('show'), 3000);
             },
 
-            // Checkout Logic
             checkout: function(e) {
                 e.preventDefault();
-
-                // 1. Cloudflare Check
                 const token = document.querySelector('[name="cf-turnstile-response"]').value;
                 if (!token) { this.toast('الرجاء تأكيد أنك لست روبوت'); return; }
 
-                // 2. ZainCash Check
                 const method = document.getElementById('payment-method').value;
                 const trx = document.getElementById('trx-id').value;
                 if (method === 'zaincash' && !trx) { this.toast('أدخل رقم عملية التحويل'); return; }
@@ -395,7 +460,6 @@
                 const txt = btn.innerText;
                 btn.innerText = 'جاري المعالجة...'; btn.disabled = true;
 
-                // 3. Prepare Data
                 const data = {
                     name: document.getElementById('c-name').value,
                     email: document.getElementById('c-email').value,
@@ -405,8 +469,7 @@
                     items: this.cart
                 };
 
-                // 4. Send to n8n
-                // ⚠️ ضع رابط WEBHOOK الخاص بك هنا 👇
+                // ⚠️⚠️⚠️ ضع رابط WEBHOOK الخاص بك هنا 👇 ⚠️⚠️⚠️
                 const WEBHOOK = 'https://digitallstructura.app.n8n.cloud/webhook/order';
 
                 fetch(WEBHOOK, {
